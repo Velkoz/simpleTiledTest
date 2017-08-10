@@ -1,7 +1,7 @@
 -- Test of sti
 local sti = require "lua_modules/sti"
-local class = require "lua_modules/30log/30log"
-local bump = require "lua_modules/bump/bump"
+local class = require "lua_modules/30log"
+local bump = require "lua_modules/bump"
 
 -- Keypress file
 require "keypress"
