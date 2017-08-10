@@ -72,13 +72,16 @@ function love.update(dt)
 		if down(upbtn) then
 			player.y = player.y - speed * dt
 			player.dir = "up"
-		elseif down(downbtn) then
+		end
+		if down(downbtn) then
 			player.y = player.y + speed * dt
 			player.dir = "down"
-		elseif down(leftbtn) then
+		end
+		if down(leftbtn) then
 			player.x = player.x - speed * dt
 			player.dir = "left"
-		elseif down(rightbtn) then
+		end
+		if down(rightbtn) then
 			player.x = player.x + speed * dt
 			player.dir = "right"
 		end
