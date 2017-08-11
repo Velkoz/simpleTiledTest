@@ -66,22 +66,36 @@ function love.update(dt)
 	-- Update player position
 	local down = love.keyboard.isDown
 	local speed = 96
+	local dspeed = speed * (math.sqrt(2) / 2)
 
 	if not paused then
 		-- Handle key input (only handle one at a time, no diagonals)
-		if down(upbtn) then
+		if down(upbtn) and down(leftbtn) then
+			player.y = player.y - dspeed * dt
+			player.x = player.x - dspeed * dt
+			player.dir = "up left"
+		elseif down(upbtn) and down(rightbtn) then
+			player.y = player.y - dspeed * dt
+			player.x = player.x + dspeed * dt
+			player.dir = "up right"
+		elseif down(downbtn) and down(leftbtn) then
+			player.y = player.y + dspeed * dt
+			player.x = player.x - dspeed * dt
+			player.dir = "down left"
+		elseif down(downbtn) and down(rightbtn) then
+			player.y = player.y + dspeed * dt
+			player.x = player.x + dspeed * dt
+			player.dir = "down right"
+		elseif down(upbtn) then
 			player.y = player.y - speed * dt
 			player.dir = "up"
-		end
-		if down(downbtn) then
+		elseif down(downbtn) then
 			player.y = player.y + speed * dt
 			player.dir = "down"
-		end
-		if down(leftbtn) then
+		elseif down(leftbtn) then
 			player.x = player.x - speed * dt
 			player.dir = "left"
-		end
-		if down(rightbtn) then
+		elseif down(rightbtn) then
 			player.x = player.x + speed * dt
 			player.dir = "right"
 		end
