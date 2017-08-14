@@ -2,13 +2,14 @@
 local sti = require "lua_modules/sti"
 local class = require "lua_modules/30log"
 local bump = require "lua_modules/bump"
+local menu = require "menu"
 
 -- Keypress file
 require "keypress"
 
 -- transform values
 local tx, ty, sx, sy, map
-local screen_width, screen_height
+local sw, sh, screen_width, screen_height
 tile_height = 16
 player = {}
 
@@ -17,19 +18,21 @@ paused = false
 inCombat = false
 abtn = "z"
 bbtn = "x"
-upbtn, downbtn, leftbtn, rightbtn = "up", "down", "left", "right"
+upbtn, downbtn, leftbtn, rightbtn = "w", "s", "a", "d"
+font = love.graphics.setNewFont(50)
 
 function love.load()
 	-- Window values
 	love.window.setTitle("STI Test")
-	love.window.setMode(1280, 720, {resizable=true, vsync=false})
+	love.window.setMode(1280, 720, {resizable=true, vsync=true})
 	love.graphics.setDefaultFilter("nearest", "nearest", 1)
 
 	-- Load map file and initialize values
 	map = sti("maps/first.lua", {"bump"})
 	tx, ty = 0, 0
 	sx, sy = 4, 4
-	screen_width, screen_height = love.graphics.getWidth() / sx, love.graphics.getHeight() / sy
+	sw, sh = love.graphics.getWidth() / sx, love.graphics.getHeight() / sy
+	screen_width, screen_height = love.graphics.getWidth(), love.graphics.getHeight()
 
 	-- Collision
 	world = bump.newWorld(16)
@@ -66,36 +69,36 @@ function love.update(dt)
 	-- Update player position
 	local down = love.keyboard.isDown
 	local speed = 96
-	local dspeed = speed * (math.sqrt(2) / 2)
+	-- local dspeed = speed * (math.sqrt(2) / 2) -- used for circular diagonals
 
 	if not paused then
-		-- Handle key input (only handle one at a time, no diagonals)
-		if down(upbtn) and down(leftbtn) then
-			player.y = player.y - dspeed * dt
-			player.x = player.x - dspeed * dt
-			player.dir = "up left"
-		elseif down(upbtn) and down(rightbtn) then
-			player.y = player.y - dspeed * dt
-			player.x = player.x + dspeed * dt
-			player.dir = "up right"
-		elseif down(downbtn) and down(leftbtn) then
-			player.y = player.y + dspeed * dt
-			player.x = player.x - dspeed * dt
-			player.dir = "down left"
-		elseif down(downbtn) and down(rightbtn) then
-			player.y = player.y + dspeed * dt
-			player.x = player.x + dspeed * dt
-			player.dir = "down right"
-		elseif down(upbtn) then
+		-- Handle key input
+		if down(leftbtn) and down(upbtn) then
+			speed = speed * (math.sqrt(2) / 2)
+		end
+		if down(leftbtn) and down(downbtn) then
+			speed = speed * (math.sqrt(2) / 2)
+		end
+		if down(rightbtn) and down(upbtn) then
+			speed = speed * (math.sqrt(2) / 2)
+		end
+		if down(rightbtn) and down(downbtn) then
+			speed = speed * (math.sqrt(2) / 2)
+		end
+
+		if down(upbtn) then
 			player.y = player.y - speed * dt
 			player.dir = "up"
-		elseif down(downbtn) then
+		end
+		if down(downbtn) then
 			player.y = player.y + speed * dt
 			player.dir = "down"
-		elseif down(leftbtn) then
+		end
+		if down(leftbtn) then
 			player.x = player.x - speed * dt
 			player.dir = "left"
-		elseif down(rightbtn) then
+		end
+		if down(rightbtn) then
 			player.x = player.x + speed * dt
 			player.dir = "right"
 		end
@@ -109,15 +112,16 @@ end
 
 function love.draw()
 	-- Set transform values
-	tx = math.floor(player.x - screen_width / 2)
-	ty = math.floor(player.y - screen_height / 2)
+	tx = math.floor(player.x - sw / 2)
+	ty = math.floor(player.y - sh / 2)
 
 	-- Draw map
 	map:draw(-tx, -ty, sx, sy)
 	--map:bump_draw(world, -tx, -ty, sx, sy)
 
 	if paused then
-		love.graphics.circle("line", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 120, 100)
+		--love.graphics.circle("line", love.graphics.getWidth() / 2, love.graphics.getHeight() / 2, 120, 100)
+		menu.drawPause(math.floor(screen_width - screen_width/3), 0)
 	end
 end
 
